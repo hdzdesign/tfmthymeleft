@@ -22,10 +22,13 @@ public class Jugador {
     private Date nacimiento;
     private String edad;
     private String nacionalidad;
-    private String inscripcion;
+    private Date inscripcion;
     private String dorsal;
     private String foto;
   //  private EquipoEntity equipo;
     private List<DonacionEntity> donaciones;
 
+    public Jugador() {
+
+    }
 }
