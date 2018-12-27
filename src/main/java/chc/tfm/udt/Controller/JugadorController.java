@@ -4,6 +4,7 @@ package chc.tfm.udt.Controller;
  * import propios del proyecto
  */
 
+import chc.tfm.udt.DTO.Jugador;
 import chc.tfm.udt.entidades.JugadorEntity;
 import chc.tfm.udt.servicio.IJugadorService;
 import chc.tfm.udt.servicio.IUploadFileService;
@@ -12,6 +13,7 @@ import chc.tfm.udt.utils.paginator.PageRender;
  * import Springframework
  */
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,13 +39,20 @@ import java.net.MalformedURLException;
 import java.util.Map;
 
 @SessionAttributes("jugadorEntity")
-@Controller
+@Controller(value = "jugadorController")
 public class JugadorController {
 
-    @Autowired
     private IJugadorService jugadorService;
-    @Autowired
+
     private IUploadFileService uploadFileService;
+    
+    @Autowired
+    public JugadorController(@Qualifier(value = "jugadorServiceImpl") IJugadorService jugadorService,
+                             @Qualifier(value = "uPloadFileServiceImpl") IUploadFileService uploadFileService){
+
+        this.jugadorService = jugadorService;
+        this.uploadFileService = uploadFileService;
+    }
     /**
      * Metodo que vamos a usar para recuperar el rcurso desde el servicio UploadFileService
      * para pasarlo a la vista en el body.
@@ -76,13 +85,13 @@ public class JugadorController {
      */
     @GetMapping(value = "/ver/{id}")
     public String ver(@PathVariable(value = "id") Long id , Map<String,Object> model, RedirectAttributes push){
-        JugadorEntity jugadorEntity = jugadorService.findOne(id);
-        if(jugadorEntity == null){
+        Jugador jugador = jugadorService.findOne(id);
+        if(jugador == null){
             push.addFlashAttribute("error", "El jugador no existe en la base de datos");
             return "redirect/listar";
         }
-        model.put("jugadorEntity",jugadorEntity);
-        model.put("tituloDetalle","Detalle del jugador: " + jugadorEntity.getNombre());
+        model.put("jugadorEntity",jugador);
+        model.put("tituloDetalle","Detalle del jugador: " + jugador.getNombre());
         return "ver";
     }
 
@@ -112,8 +121,8 @@ public class JugadorController {
      */
     @RequestMapping(value = "/form")
     public String crear(Map<String, Object> model){
-        JugadorEntity jugadorEntity = new JugadorEntity();
-        model.put("jugadorEntity", jugadorEntity);
+        Jugador jugador = new Jugador();
+        model.put("jugadorEntity", jugador);
         model.put("titulo","Dar de alta");
 
         return "form";
@@ -129,12 +138,12 @@ public class JugadorController {
      */
     @RequestMapping(value = "/form/{id}")
     public String editar (@PathVariable(value = "id") Long id, Map<String , Object> model,RedirectAttributes push){
-        JugadorEntity jugadorEntity = null;
+        Jugador jugador = null;
         //Comprobamos que el id es superior a 0, si no, no existe el jugador.
         if(id >0){
-            jugadorEntity = jugadorService.findOne(id);
+            jugador = jugadorService.findOne(id);
             // Si el jugador es null , no existe en base de datos.
-            if(jugadorEntity == null){
+            if(jugador == null){
                 push.addFlashAttribute("error","El jugador no existe ");
                 return "redirect:/listar";
             }
@@ -143,7 +152,7 @@ public class JugadorController {
             push.addFlashAttribute("error","El id no puede ser 0 ");
             return "redirect:/listar";
         }
-        model.put("jugadorEntity", jugadorEntity);
+        model.put("jugadorEntity", jugador);
         model.put("titulo","Editar Jugador");
         return "form";
     }
@@ -163,7 +172,7 @@ public class JugadorController {
      *      * 2º Movemos la imágen, Un string que contiene el nombre unico de la foto , generado con la interfaz UUID.
      */
     @RequestMapping(value = "/form", method = RequestMethod.POST)
-    public String guardar(@Valid    JugadorEntity jugadorEntity, BindingResult result,
+    public String guardar(@Valid Jugador jugador, BindingResult result,
                           Model model, RedirectAttributes push,
                           SessionStatus status, @RequestParam("file")MultipartFile foto){
 
@@ -176,12 +185,12 @@ public class JugadorController {
         if(!foto.isEmpty()){
             //comprobamos que el jugador no viene vacio ni es null para proceder al borrado de la foto con el objeto File
             if(
-                    jugadorEntity.getId() != null
-                &&  jugadorEntity.getId() > 0
-                &&  jugadorEntity.getFoto() != null
-                &&  jugadorEntity.getFoto().length() > 0)
+                    jugador.getId() != null
+                &&  jugador.getId() > 0
+                &&  jugador.getFoto() != null
+                &&  jugador.getFoto().length() > 0)
             {
-                uploadFileService.delete(jugadorEntity.getFoto());
+                uploadFileService.delete(jugador.getFoto());
             }
             String nombreUnicoDeArchivo = null;
             try {
@@ -192,12 +201,12 @@ public class JugadorController {
             //Mostramos un mensaje al usuario.
             push.addFlashAttribute("info", "Ha sido subida correctamente," + nombreUnicoDeArchivo+"");
             //Pasamos la foto a la entity para que quede almacenada en base de datos.
-            jugadorEntity.setFoto(nombreUnicoDeArchivo);
+            jugador.setFoto(nombreUnicoDeArchivo);
         }
         // CONDICIONAL QUE INDICA SI EL ID ES DISTINTO DE 0 SE ESTA EDITANDO Y SI ES 0 SE ESTA CREANDO PARA MOSTRAR EL MENSAJE
-        String mensajePush = (jugadorEntity.getId() != null)? "Jugador Editado con exito" : "Jugador creado con exito";
+        String mensajePush = (jugador.getId() != null)? "Jugador Editado con exito" : "Jugador creado con exito";
 
-        jugadorService.save(jugadorEntity);
+        jugadorService.save(jugador);
         //CERRAMOS LA SESSIÓN UNA VEZ COMPLETADO EL PROCESO DE GUARDADO.
         status.setComplete();
         push.addFlashAttribute("success", mensajePush);
@@ -213,14 +222,14 @@ public class JugadorController {
     @RequestMapping(value = "/eliminar/{id}")
     public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes push){
         if(id > 0){
-            JugadorEntity jugadorEntity = jugadorService.findOne(id);
+            Jugador jugador = jugadorService.findOne(id);
             jugadorService.delete(id);
             push.addFlashAttribute("success","Jugador eliminado con exito");
 
             // Al eliminar el jugador debemos borrar su foto del servidor para evitar que queden archivos residuales.
-            if(uploadFileService.delete(jugadorEntity.getFoto())){
+            if(uploadFileService.delete(jugador.getFoto())){
                 // borramos el archivo y mostramos un mensaje push al usuario.
-                    push.addFlashAttribute("info","Foto " + jugadorEntity.getFoto()+ " Foto eliminada con exito ");
+                    push.addFlashAttribute("info","Foto " + jugador.getFoto()+ " Foto eliminada con exito ");
                 }
             }
         return "redirect:/listar";

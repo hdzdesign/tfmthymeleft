@@ -3,9 +3,10 @@ package chc.tfm.udt.repositorios;
 import chc.tfm.udt.entidades.ProductoEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository(value = "iProductoDAO")
 public interface IProductoDAO extends CrudRepository<ProductoEntity, Long> {
     /**
      * Query a nivel de objeto no de tabla, ? hace referencia al parametro y el 1 al parametro que se le pasa.

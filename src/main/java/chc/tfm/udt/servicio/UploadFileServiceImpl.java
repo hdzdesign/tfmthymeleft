@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-@Service
+@Service(value = "uPloadFileServiceImpl")
 public class UploadFileServiceImpl implements IUploadFileService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());

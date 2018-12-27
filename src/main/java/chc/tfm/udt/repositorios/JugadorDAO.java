@@ -4,7 +4,7 @@ import chc.tfm.udt.entidades.JugadorEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository(value = "jugadorDAO")
 public interface JugadorDAO extends JpaRepository<JugadorEntity, Long> {
     /**
      * Metodo creado para buscar por nombre... se pueden crear metodos para buscar por cualquier atributo de la entidad.

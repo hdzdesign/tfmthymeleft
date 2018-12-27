@@ -1,6 +1,7 @@
 package chc.tfm.udt.entidades;
 
 
+import chc.tfm.udt.DTO.Jugador;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -71,7 +72,10 @@ public class JugadorEntity implements Serializable {
      * FetchTypy.LAZY atributo perezoso Cada vez que se haga 1 petición de 1 jugador no se hara la petición a las donaciones si no se expresa.
      * CascadeType.All: Con esto conseguimos que si borramos 1 jugador se borren también sus donaciones.
      * mappedBy: Mapea las tablas en ambos sentidos creando las llaves foraneas en ambas tablas*/
-    @OneToMany(mappedBy = "jugadorEntity",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "jugadorEntity",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<DonacionEntity> donaciones;
 
     /**
@@ -85,6 +89,10 @@ public class JugadorEntity implements Serializable {
     public JugadorEntity(){
         this.donaciones = new ArrayList<>();
     }
+
+    public JugadorEntity(Jugador jugador) {
+    }
+
 
 
     // MEtodo que vamos a utilizar para  añadir una sola donación a la lista, al contrario que con el set que añadimos 1 lista.

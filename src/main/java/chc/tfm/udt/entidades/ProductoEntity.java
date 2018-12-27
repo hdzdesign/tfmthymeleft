@@ -1,5 +1,6 @@
 package chc.tfm.udt.entidades;
 
+import chc.tfm.udt.DTO.Producto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,6 @@ import java.util.Date;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "productos")
 public class ProductoEntity implements Serializable {
@@ -30,11 +30,15 @@ public class ProductoEntity implements Serializable {
     @Column(name = "create_at")
     private Date createAt;
 
+    public ProductoEntity(Producto producto) {
+    }
+
     //Metodo que usaremos para persistir la fecha justo en el momento de crear la claes
     @PrePersist
     public void prePersist(){
         createAt = new Date();
     }
 
-
+    public ProductoEntity() {
+    }
 }

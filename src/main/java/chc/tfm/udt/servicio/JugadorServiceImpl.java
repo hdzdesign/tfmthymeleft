@@ -1,13 +1,22 @@
 package chc.tfm.udt.servicio;
+import chc.tfm.udt.DTO.Donacion;
+import chc.tfm.udt.DTO.Jugador;
+import chc.tfm.udt.DTO.Producto;
+import chc.tfm.udt.convertidores.DonacionConverter;
+import chc.tfm.udt.convertidores.JugadorConverter;
+import chc.tfm.udt.convertidores.ProductoConverter;
 import chc.tfm.udt.entidades.DonacionEntity;
 import chc.tfm.udt.entidades.JugadorEntity;
 import chc.tfm.udt.entidades.ProductoEntity;
 import chc.tfm.udt.repositorios.IDonacionDAO;
 import chc.tfm.udt.repositorios.IProductoDAO;
 import chc.tfm.udt.repositorios.JugadorDAO;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,23 +28,43 @@ import java.util.Optional;
 /**
  * Clase que usaremos para seguir el patron de diseño "Business Service Facade"
  */
-@Service
+@Service(value = "jugadorServiceImpl")
 public class JugadorServiceImpl implements IJugadorService {
 
-    private static final Log logger = LogFactory.getLog(JugadorServiceImpl.class);
+    private final Logger LOG = LoggerFactory.getLogger(getClass());
 
+    private JugadorConverter converter;
 
-    @Autowired
+    private DonacionConverter donacionConverter;
+
     private JugadorDAO jugadorDAO;
-    @Autowired
+
     private IProductoDAO productoDAO;
-    @Autowired
+
     private IDonacionDAO donacionDAO;
+
+    private ProductoConverter productoConverter;
+
+    @Autowired
+    public JugadorServiceImpl(@Qualifier(value = "jugadorDAO") JugadorDAO jugadorDAO,
+                              @Qualifier(value = "jugadorConverter") JugadorConverter converter,
+                              @Qualifier(value = "iProductoDAO") IProductoDAO productoDAO,
+                              @Qualifier(value = "iDonacionDAO") IDonacionDAO donacionDAO,
+                              @Qualifier(value = "donacionConverter") DonacionConverter donacionConverter,
+                              @Qualifier(value = "productoConverter") ProductoConverter productoConverter){
+        this.jugadorDAO = jugadorDAO;
+        this.converter = converter;
+        this.productoDAO = productoDAO;
+        this.donacionDAO = donacionDAO;
+        this.donacionConverter = donacionConverter;
+        this.productoConverter = productoConverter;
+
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<JugadorEntity> findAll() {
-        return (List<JugadorEntity>)jugadorDAO.findAll();
+        return jugadorDAO.findAll();
     }
 
     @Override
@@ -45,15 +74,27 @@ public class JugadorServiceImpl implements IJugadorService {
 
     @Override
     @Transactional(readOnly = true)
-    public JugadorEntity findOne(Long id) {
-        return jugadorDAO.findById(id).orElse(null);
+    public Jugador findOne(Long id) {
+        Jugador resultado = null;
+
+        Optional<JugadorEntity> buscar = jugadorDAO.findById(id);
+        if(buscar.isPresent()){
+            JugadorEntity encontrado = buscar.get();
+            resultado = converter.convertToEntityAttribute(encontrado);
+        }
+
+        return resultado;
     }
 
 
     @Override
-    @Transactional
-    public void save(JugadorEntity jugadorEntity) {
-        jugadorDAO.save(jugadorEntity);
+
+    public Jugador save(Jugador jugador) {
+        LOG.info("Entramos en el Servicio SAVE.");
+        JugadorEntity j = converter.convertToDatabaseColumn(jugador);
+        JugadorEntity saved = jugadorDAO.save(j);
+        Jugador returned = converter.convertToEntityAttribute(saved);
+        return returned;
     }
 
     @Transactional
@@ -67,15 +108,24 @@ public class JugadorServiceImpl implements IJugadorService {
     public List<ProductoEntity> findByNombre(String term) {
         return productoDAO.findByNombreLikeIgnoreCase("%"+term+"%");
     }
-    @Transactional
+
     @Override
-    public void saveDonacion(DonacionEntity donacionEntity) {
-        donacionDAO.save(donacionEntity);
+    public Donacion saveDonacion(Donacion donacion) {
+        DonacionEntity d = donacionConverter.convertToDatabaseColumn(donacion);
+        DonacionEntity saved = donacionDAO.saveAndFlush(d);
+        Donacion returned = donacionConverter.convertToEntityAttribute(saved);
+        return returned;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public ProductoEntity findProductoEntityById(Long id) {
-        return productoDAO.findById(id).orElse(null);
+    public Producto findProductoEntityById(Long id) {
+        Producto resultado = null;
+        Optional<ProductoEntity> buscar = productoDAO.findById(id);
+        if(buscar.isPresent()){
+            ProductoEntity encontrado = buscar.get();
+            resultado = productoConverter.convertToEntityAttribute(encontrado);
+        }
+        return resultado;
     }
 }

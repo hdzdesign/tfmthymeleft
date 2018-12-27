@@ -1,5 +1,10 @@
 package chc.tfm.udt.Controller;
 
+import chc.tfm.udt.DTO.Donacion;
+import chc.tfm.udt.DTO.ItemDonacion;
+import chc.tfm.udt.DTO.Jugador;
+import chc.tfm.udt.DTO.Producto;
+import chc.tfm.udt.convertidores.DonacionConverter;
 import chc.tfm.udt.entidades.DonacionEntity;
 import chc.tfm.udt.entidades.ItemDonacionEntity;
 import chc.tfm.udt.entidades.JugadorEntity;
@@ -8,6 +13,7 @@ import chc.tfm.udt.servicio.IJugadorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +36,14 @@ public class DonacionController {
     private final Logger log = LoggerFactory.getLogger(getClass());
     @Autowired
     private IJugadorService jugadorService;
+    private DonacionConverter donacionConverter;
+
+    public DonacionController(@Qualifier(value = "donacionConverter") DonacionConverter donacionConverter,
+                              @Qualifier(value = "jugadorServiceImpl") IJugadorService jugadorService){
+        this.donacionConverter = donacionConverter;
+        this.jugadorService = jugadorService;
+
+    }
 
     /**
      * Con este metodo vamos a comunicarnos con el formulario que va hacer posible la inserción en base de datos de los
@@ -45,14 +59,14 @@ public class DonacionController {
                                         Map<String, Object> model,
                                         RedirectAttributes push){
 
-        JugadorEntity jugadorEntity = jugadorService.findOne(jugadorEntityId);
+        Jugador j = jugadorService.findOne(jugadorEntityId);
 
-        if(jugadorEntity == null){
+        if(j == null){
             push.addFlashAttribute("error", "El jugador no existe en la base de datos");
             return "redirect:/listar";
         }
-        DonacionEntity donacion = new DonacionEntity();
-        donacion.setJugadorEntity(jugadorEntity);
+        Donacion donacion = new Donacion();
+        donacion.setJugador(j);
 
         model.put("donacion", donacion);
         model.put("titulo", "Crear Donacion.");
@@ -79,17 +93,17 @@ public class DonacionController {
 
 
     @PostMapping("/form")
-    public String guardar(@Valid @ModelAttribute("donacion") DonacionEntity donacion,
+    public String guardar(@Valid @ModelAttribute("donacion") Donacion donacion,
                           @RequestParam(name = "item_id[]",required = false) Long[] itemId,
                           @RequestParam(name = "cantidad[]",required = false) Integer[] cantidad,
                           RedirectAttributes push,
                           SessionStatus status) {
         for (int i = 0; i < itemId.length; i++ ){
-            ProductoEntity productoEntity = jugadorService.findProductoEntityById(itemId[i]);
+            Producto producto = jugadorService.findProductoEntityById(itemId[i]);
 
-            ItemDonacionEntity linea = new ItemDonacionEntity();
+            ItemDonacion linea = new ItemDonacion();
             linea.setCantidad(cantidad[i]);
-            linea.setProductoEntity(productoEntity);
+            linea.setProducto(producto);
             donacion.addItemDonacion(linea);
 
             log.info("ID " + itemId[i].toString() + ", cantidad " + cantidad[i].toString());
@@ -97,7 +111,7 @@ public class DonacionController {
         jugadorService.saveDonacion(donacion);
         status.setComplete();
         push.addFlashAttribute("success", "La Donación ha sido asignada con exito");
-        return "redirect:/ver/" + donacion.getJugadorEntity().getId();
+        return "redirect:/ver/" + donacion.getJugador().getId();
     }
 
 

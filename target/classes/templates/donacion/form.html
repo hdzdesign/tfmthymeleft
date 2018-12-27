@@ -13,7 +13,7 @@
         <div class="card-body">
             <h4 class="card-title">
                 <a class="btn btn-light btn-xs"
-                   th:href="@{'/ver/' + ${donacion.jugadorEntity.id}}"
+                   th:href="@{'/ver/' + ${donacion.jugador.id}}"
                    th:text="'&laquo; volver'"></a>
             </h4>
             <!-- formulario de entrada de factura.-->
@@ -22,11 +22,11 @@
                   method="post">
             <!-- Recogemos los datos del jugador y su apellido, desabilitamos el campo para que no pueda ser editado.-->
             <div class="form-group row">
-                <label for="jugadorEntity" class="col-sm-2 col-form-label"
+                <label for="jugador" class="col-sm-2 col-form-label"
                        th:text="'Jugador'"></label>
                 <div class="col-sm-6">
             <input name="jugadorEntity"
-                   th:value="${donacion.jugadorEntity.nombre} + ' ' + ${donacion.jugadorEntity.apellido1}"
+                   th:value="${donacion.jugador.nombre} + ' ' + ${donacion.jugador.apellido1}"
                    class="form-control"
                    disabled='disabled'/>
                 </div>

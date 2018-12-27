@@ -1,6 +1,9 @@
 package chc.tfm.udt.entidades;
 
+import chc.tfm.udt.DTO.Donacion;
+import chc.tfm.udt.DTO.Jugador;
 import lombok.Data;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -42,26 +45,18 @@ public class DonacionEntity implements Serializable {
      * puesto que es una relación unidireccional.
      * Hay que crear el campo donacion_id en la tabla  en base datos no en el Entity.
      */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "donacion_id")
+    @OneToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ItemDonacionEntity> items;
 
-
-    //Inicializamos el list Items por el constructor
-    public DonacionEntity() {
-        this.items = new ArrayList<>();
+    public DonacionEntity(Donacion e) {
     }
+
 
     //Metodo que usaremos para persistir la fecha justn en el momento de crear la claes
     @PrePersist
     public void prePersist() {
         createAt = new Date();
-    }
-
-    // MEtodo que vamos a utilizar para  añadir un solo item a la lista, al contrario que con el set que añadimos 1 lista.
-    public void addItemDonacion(ItemDonacionEntity item) {
-        this.items.add(item);
-
     }
 
     public Double getTotal() {
@@ -71,5 +66,8 @@ public class DonacionEntity implements Serializable {
             total += items.get(i).calcularValor();
         }
         return total;
+    }
+
+    public DonacionEntity() {
     }
 }

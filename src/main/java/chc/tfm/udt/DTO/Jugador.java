@@ -6,6 +6,7 @@ import chc.tfm.udt.entidades.JugadorEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,9 +27,14 @@ public class Jugador {
     private String dorsal;
     private String foto;
   //  private EquipoEntity equipo;
-    private List<DonacionEntity> donaciones;
+    private List<Donacion> donaciones;
+
+
 
     public Jugador() {
+        this.donaciones = new ArrayList<>();
+    }
 
+    public Jugador(JugadorEntity jugadorEntity) {
     }
 }

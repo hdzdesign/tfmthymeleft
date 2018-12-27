@@ -1,5 +1,8 @@
 package chc.tfm.udt.servicio;
 
+import chc.tfm.udt.DTO.Donacion;
+import chc.tfm.udt.DTO.Jugador;
+import chc.tfm.udt.DTO.Producto;
 import chc.tfm.udt.entidades.DonacionEntity;
 import chc.tfm.udt.entidades.JugadorEntity;
 import chc.tfm.udt.entidades.ProductoEntity;
@@ -29,16 +32,16 @@ public interface IJugadorService {
 
     /**
      * Metodo que utilizaremos para almacenar 1 jugador en la base de datos
-     * @param jugadorEntity
+     * @param jugador
      */
-    void save(JugadorEntity jugadorEntity);
+    Jugador save(Jugador jugador);
 
     /**
      * Metodo que utilizaremos para buscar por un id
      * @param id
      * @return
      */
-    JugadorEntity findOne(Long id);
+    Jugador findOne(Long id);
 
     /**
      * Metodo para buscar por nombre a los jugadores
@@ -63,15 +66,15 @@ public interface IJugadorService {
 
     /**
      * Metodo que nos va a permitir guardar las facturas en base de datos.
-     * @param donacionEntity
+     * @param donacion
      */
-    void saveDonacion(DonacionEntity donacionEntity);
+    Donacion saveDonacion(Donacion donacion);
 
     /**
      * Metodo que usaremos para recuperar 1 producto de la base de datos
       * @param id
      * @return
      */
-     ProductoEntity findProductoEntityById(Long id);
+     Producto findProductoEntityById(Long id);
 
 }

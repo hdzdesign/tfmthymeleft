@@ -1,9 +1,11 @@
 package chc.tfm.udt.DTO;
 
+import chc.tfm.udt.entidades.DonacionEntity;
 import chc.tfm.udt.entidades.ItemDonacionEntity;
 import chc.tfm.udt.entidades.JugadorEntity;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +16,20 @@ public class Donacion {
     private String descripcion;
     private String observacion;
     private Date createAt;
-    private JugadorEntity jugadorEntity;
-    private List<ItemDonacionEntity> items;
+    private Jugador jugador;
+    private List<ItemDonacion> items;
+
+    public Donacion(){
+        this.items = new ArrayList<>();
+    }
+
+    public Donacion(DonacionEntity d) {
+    }
+
+    public void addItemDonacion(ItemDonacion linea) {
+        this.items.add(linea);
+    }
+
+    public void addItemDonacion(ItemDonacionEntity linea) {
+    }
 }
