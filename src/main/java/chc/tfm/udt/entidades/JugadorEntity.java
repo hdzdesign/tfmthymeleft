@@ -1,7 +1,6 @@
 package chc.tfm.udt.entidades;
 
-
-import chc.tfm.udt.DTO.Jugador;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -74,7 +73,6 @@ public class JugadorEntity implements Serializable {
      * mappedBy: Mapea las tablas en ambos sentidos creando las llaves foraneas en ambas tablas*/
     @OneToMany(mappedBy = "jugadorEntity",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<DonacionEntity> donaciones;
 
@@ -90,10 +88,9 @@ public class JugadorEntity implements Serializable {
         this.donaciones = new ArrayList<>();
     }
 
-    public JugadorEntity(Jugador jugador) {
-    }
-
-
+/*    public String toString(){
+        return new Gson().toJson(this);
+    }*/
 
     // MEtodo que vamos a utilizar para  añadir una sola donación a la lista, al contrario que con el set que añadimos 1 lista.
     public void addDonacion(DonacionEntity donacionEntity){

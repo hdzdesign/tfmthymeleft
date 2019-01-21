@@ -2,6 +2,7 @@ package chc.tfm.udt.entidades;
 
 import chc.tfm.udt.DTO.Donacion;
 import chc.tfm.udt.DTO.Jugador;
+import com.google.gson.Gson;
 import lombok.Data;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,12 +47,9 @@ public class DonacionEntity implements Serializable {
      * Hay que crear el campo donacion_id en la tabla  en base datos no en el Entity.
      */
     @JoinColumn(name = "donacion_id")
-    @OneToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany( fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
     private List<ItemDonacionEntity> items;
-
-    public DonacionEntity(Donacion e) {
-    }
-
 
     //Metodo que usaremos para persistir la fecha justn en el momento de crear la claes
     @PrePersist
@@ -70,4 +68,7 @@ public class DonacionEntity implements Serializable {
 
     public DonacionEntity() {
     }
+//    public String toString(){
+//        return new Gson().toJson(this);
+//    }
 }

@@ -112,7 +112,7 @@ public class JugadorServiceImpl implements IJugadorService {
     @Override
     public Donacion saveDonacion(Donacion donacion) {
         DonacionEntity d = donacionConverter.convertToDatabaseColumn(donacion);
-        DonacionEntity saved = donacionDAO.saveAndFlush(d);
+        DonacionEntity saved = donacionDAO.save(d);
         Donacion returned = donacionConverter.convertToEntityAttribute(saved);
         return returned;
     }

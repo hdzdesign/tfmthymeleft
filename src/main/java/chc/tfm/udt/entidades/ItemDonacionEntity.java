@@ -1,6 +1,7 @@
 package chc.tfm.udt.entidades;
 
 import chc.tfm.udt.DTO.ItemDonacion;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,12 +33,10 @@ public class ItemDonacionEntity implements Serializable {
      * si no lo especificamos
      * ItemDonaciónEntity , tiene una relación unidireccional con EquipaciónEntity, por eso unicamente se especifica aqui la relación.
      */
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id")
     private ProductoEntity productoEntity;
 
-    public ItemDonacionEntity(ItemDonacion d) {
-    }
 
   /*  @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "viajes_id")
@@ -51,9 +50,11 @@ public class ItemDonacionEntity implements Serializable {
      */
     public Double calcularValor() {
         return cantidad.doubleValue() * productoEntity.getPrecio();
-
-
     }
+
+//    public String toString(){
+//        return new Gson().toJson(this);
+//    }
 
     public ItemDonacionEntity() {
     }

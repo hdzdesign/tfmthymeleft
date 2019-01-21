@@ -1,8 +1,6 @@
 package chc.tfm.udt.DTO;
 
-import chc.tfm.udt.entidades.DonacionEntity;
-import chc.tfm.udt.entidades.EquipoEntity;
-import chc.tfm.udt.entidades.JugadorEntity;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -35,6 +33,8 @@ public class Jugador {
         this.donaciones = new ArrayList<>();
     }
 
-    public Jugador(JugadorEntity jugadorEntity) {
+    public String toString(){
+        return new Gson().toJson(this);
     }
+
 }

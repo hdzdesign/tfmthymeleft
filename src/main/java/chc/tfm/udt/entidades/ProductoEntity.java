@@ -1,6 +1,7 @@
 package chc.tfm.udt.entidades;
 
 import chc.tfm.udt.DTO.Producto;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,9 +31,6 @@ public class ProductoEntity implements Serializable {
     @Column(name = "create_at")
     private Date createAt;
 
-    public ProductoEntity(Producto producto) {
-    }
-
     //Metodo que usaremos para persistir la fecha justo en el momento de crear la claes
     @PrePersist
     public void prePersist(){
@@ -41,4 +39,7 @@ public class ProductoEntity implements Serializable {
 
     public ProductoEntity() {
     }
+   /* public String toString(){
+        return new Gson().toJson(this);
+    }*/
 }

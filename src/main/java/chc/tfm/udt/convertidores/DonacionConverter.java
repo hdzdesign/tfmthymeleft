@@ -8,15 +8,27 @@ import chc.tfm.udt.entidades.ItemDonacionEntity;
 import chc.tfm.udt.entidades.JugadorEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Converter
 @Component(value = "donacionConverter")
 public class DonacionConverter implements AttributeConverter<Donacion, DonacionEntity> {
+
+    @Autowired
+    @Qualifier("itemDonacionConverter")
+    private ItemDonacionConverter itemConverter;
+
+    @Autowired
+    @Qualifier("jugadorConverter")
+    private JugadorConverter jugadorConverter;
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
@@ -28,12 +40,22 @@ public class DonacionConverter implements AttributeConverter<Donacion, DonacionE
         entity.setId(attribute.getId());
         entity.setObservacion(attribute.getObservacion());
         entity.setCreateAt(attribute.getCreateAt());
-        entity.setJugadorEntity(new JugadorEntity(attribute.getJugador()));
-        entity.setItems(attribute.getItems().
-                stream().
-                map(d -> new ItemDonacionEntity(d)).
-                collect(Collectors.toList()));
-        LOG.info("Fin convertidor");
+        //SET JUGADOR
+        Jugador jugador = attribute.getJugador();
+        entity.setJugadorEntity(jugador != null ?
+                                jugadorConverter.convertToDatabaseColumn(jugador)
+                                : new JugadorEntity());
+
+        //SET LIST
+        List<ItemDonacion> items = attribute.getItems();
+        entity.setItems(items != null
+                        ? items
+                        .stream()
+                        .map(dto -> itemConverter.convertToDatabaseColumn(dto))
+                        .collect(Collectors.toList())
+                        : new ArrayList<>());
+        LOG.info("SE HA SETEADO BIEN LA DONACIÓN Y EL JUGADOR.");
+       // LOG.info(entity.toString());
         return entity;
     }
     //Convertir de ENTITY a DTO
@@ -44,12 +66,21 @@ public class DonacionConverter implements AttributeConverter<Donacion, DonacionE
         dto.setId(dbData.getId());
         dto.setObservacion(dbData.getObservacion());
         dto.setCreateAt(dbData.getCreateAt());
-        dto.setJugador(new Jugador(dbData.getJugadorEntity()));
-        dto.setItems(dbData.getItems().
-                stream().
-                map(o -> new ItemDonacion(o)).
-                collect(Collectors.toList()));
+        //seteo al jugador lo que viene de la donación
+        JugadorEntity jugadorEntity = dbData.getJugadorEntity();
+        dto.setJugador(jugadorEntity != null ?
+                jugadorConverter.convertToEntityAttribute(jugadorEntity)
+                : new Jugador());
+        // SETEAMOS LA LISTA DE ITEMS
+        List<ItemDonacionEntity> itemDonaciones = dbData.getItems();
+        dto.setItems(itemDonaciones != null
+                    ? itemDonaciones.stream().map(item -> itemConverter.convertToEntityAttribute(item))
+                    .collect(Collectors.toList())
+                    : new ArrayList<>());
+
+
         LOG.info("Fin convertidor DONCACION");
+       // LOG.info(dto.toString());
         return dto;
     }
 }

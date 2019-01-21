@@ -34,10 +34,11 @@ import java.util.Map;
 public class DonacionController {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    @Autowired
+
     private IJugadorService jugadorService;
     private DonacionConverter donacionConverter;
 
+    @Autowired
     public DonacionController(@Qualifier(value = "donacionConverter") DonacionConverter donacionConverter,
                               @Qualifier(value = "jugadorServiceImpl") IJugadorService jugadorService){
         this.donacionConverter = donacionConverter;
@@ -111,6 +112,7 @@ public class DonacionController {
         jugadorService.saveDonacion(donacion);
         status.setComplete();
         push.addFlashAttribute("success", "La Donación ha sido asignada con exito");
+        log.info("ESTA ES LA DONACIÓN CON EL JUGADOR ASOCIADO Y SU PRODUCTO");
         return "redirect:/ver/" + donacion.getJugador().getId();
     }
 

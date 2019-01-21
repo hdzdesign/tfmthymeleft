@@ -1,9 +1,9 @@
 package chc.tfm.udt.DTO;
 
-import chc.tfm.udt.entidades.DonacionEntity;
+
 import chc.tfm.udt.entidades.ItemDonacionEntity;
-import chc.tfm.udt.entidades.JugadorEntity;
 import lombok.Data;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,13 +23,14 @@ public class Donacion {
         this.items = new ArrayList<>();
     }
 
-    public Donacion(DonacionEntity d) {
-    }
-
     public void addItemDonacion(ItemDonacion linea) {
         this.items.add(linea);
     }
 
     public void addItemDonacion(ItemDonacionEntity linea) {
+    }
+
+    public String toString(){
+        return new Gson().toJson(this);
     }
 }

@@ -1,6 +1,7 @@
 package chc.tfm.udt.DTO;
 
 import chc.tfm.udt.entidades.ProductoEntity;
+import com.google.gson.Gson;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,7 +16,7 @@ public class Producto {
 
     public Producto() {
     }
-
-    public Producto(ProductoEntity productoEntity) {
+    public String toString(){
+        return new Gson().toJson(this);
     }
 }
